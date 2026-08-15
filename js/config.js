@@ -15,6 +15,6 @@ export const SUPABASE = {
 
 // Пароль-гейт: SHA-256 (hex) от пароля. null = выключить гейт.
 // Сгенерировать хэш: см. README (одна строка в консоли браузера).
-export const GATE = { passwordHash: null };
+export const GATE = { passwordHash: "d90c8627198fe02c4730d7360eaa80e6e6cee6d9c5497b41d7dcfa75e988d40c" };
 
 export const FETCH = { maxPages: 20 }; // страниц стакана за загрузку (10 ad'ов/стр)
