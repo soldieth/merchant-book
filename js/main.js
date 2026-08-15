@@ -7,7 +7,7 @@ import { renderList } from "./ui-list.js";
 import { renderDetail } from "./ui-detail.js";
 
 const $ = (s) => document.querySelector(s);
-const state = { merchants: [], notes: new Map(), side: "buy" };
+const state = { merchants: [], notes: new Map(), side: "buy", notesError: null };
 
 function setStatus(text, isErr = false) { const el = $("#status"); el.textContent = text; el.classList.toggle("error", isErr); }
 
@@ -33,7 +33,11 @@ function rerender() {
   list = searchMerchants(list, query, state.notes);
   list = sortMerchants(list, sortKey, dir);
   renderList($("#list"), list, state.notes, openDetail);
-  setStatus(`${list.length} из ${state.merchants.length} мерчантов`);
+  if (state.notesError) {
+    setStatus(`${list.length} из ${state.merchants.length} · ⚠ ${state.notesError}`, true);
+  } else {
+    setStatus(`${list.length} из ${state.merchants.length} мерчантов`);
+  }
 }
 
 function refreshPayOptions() {
@@ -52,7 +56,8 @@ async function loadMarket() {
     state.merchants = await fetchAllMerchants({ tradeType: state.side, coinId: HTX.coinId, currency: HTX.currency, maxPages: FETCH.maxPages });
     try {
       state.notes = await getNotes(SUPABASE, state.merchants.map((m) => m.uid));
-    } catch (e) { setStatus("HTX ок, но заметки не загрузились: " + e.message, true); }
+      state.notesError = null;
+    } catch (e) { state.notesError = "заметки не загрузились: " + e.message; }
     refreshPayOptions();
     rerender();
   } catch (e) {
