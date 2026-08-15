@@ -2,6 +2,7 @@ import { test } from "node:test";
 import assert from "node:assert/strict";
 import { buildMarketPath, parseHtxBody } from "../js/htx-api.js";
 import { dedupeMerchants } from "../js/htx-api.js";
+import { fetchMarketPage, fetchAllMerchants } from "../js/htx-api.js";
 
 test("buildMarketPath: базовые параметры и дефолты", () => {
   const p = buildMarketPath({ tradeType: "buy", coinId: 2, currency: 172, page: 1 });
@@ -64,4 +65,43 @@ test("dedupeMerchants: orderCompleteRate и tradeCount числа", () => {
   const m = dedupeMerchants([AD({ orderCompleteRate: "97", tradeCount: "100.5" })]);
   assert.equal(m[0].orderCompleteRate, 97);
   assert.equal(m[0].tradeCount, 100.5);
+});
+
+function fakeFetch(pages) {
+  // pages: массив тел по currPage (1-индексация)
+  return async (url) => {
+    const u = new URL(url);
+    const page = Number(u.searchParams.get("currPage")) || 1;
+    const body = pages[page - 1];
+    return { ok: true, status: 200, json: async () => body };
+  };
+}
+
+test("fetchMarketPage: парсит ad'ы и метаданные", async () => {
+  const body = { code: 200, totalPage: 3, currPage: 1, totalCount: 25, data: [{ uid: 1, userName: "A" }] };
+  const r = await fetchMarketPage({ tradeType: "buy", coinId: 2, currency: 172, page: 1 }, { fetchImpl: fakeFetch([body]) });
+  assert.equal(r.totalPage, 3);
+  assert.equal(r.ads.length, 1);
+  assert.equal(r.ads[0].uid, 1);
+});
+
+test("fetchAllMerchants: обходит страницы и дедупит по uid", async () => {
+  const mk = (uid) => ({ uid, userName: "U" + uid, price: "6.5", minTradeLimit: "100", maxTradeLimit: "200", payMethods: [] });
+  const pages = [
+    { code: 200, totalPage: 2, currPage: 1, data: [mk(1), mk(2)] },
+    { code: 200, totalPage: 2, currPage: 2, data: [mk(2), mk(3)] },
+  ];
+  const merchants = await fetchAllMerchants({ tradeType: "buy", coinId: 2, currency: 172, maxPages: 20 }, { fetchImpl: fakeFetch(pages) });
+  assert.deepEqual(merchants.map((m) => m.uid).sort(), [1, 2, 3]);
+});
+
+test("fetchAllMerchants: уважает maxPages", async () => {
+  const mk = (uid) => ({ uid, userName: "U", price: "1", minTradeLimit: "1", maxTradeLimit: "1", payMethods: [] });
+  const pages = [
+    { code: 200, totalPage: 5, currPage: 1, data: [mk(1)] },
+    { code: 200, totalPage: 5, currPage: 2, data: [mk(2)] },
+    { code: 200, totalPage: 5, currPage: 3, data: [mk(3)] },
+  ];
+  const merchants = await fetchAllMerchants({ tradeType: "buy", coinId: 2, currency: 172, maxPages: 2 }, { fetchImpl: fakeFetch(pages) });
+  assert.deepEqual(merchants.map((m) => m.uid).sort(), [1, 2]);
 });

@@ -68,3 +68,41 @@ export function dedupeMerchants(ads) {
   }
   return [...byUid.values()].map((m) => ({ ...m, payMethods: [...m.payMethods] }));
 }
+
+async function getJson(path, { fetchImpl = globalThis.fetch, host = "https://www.htx.com" } = {}) {
+  const res = await fetchImpl(host + path, { headers: { accept: "application/json" }, credentials: "omit" });
+  if (!res.ok) throw new Error(`HTTP ${res.status}`);
+  return parseHtxBody(await res.json());
+}
+
+export async function fetchMarketPage(params, opts = {}) {
+  const body = await getJson(buildMarketPath(params), opts);
+  return {
+    ads: Array.isArray(body.data) ? body.data : [],
+    totalPage: Number(body.totalPage) || 1,
+    currPage: Number(body.currPage) || params.page || 1,
+    totalCount: Number(body.totalCount) || 0,
+  };
+}
+
+export async function fetchAllMerchants({ tradeType = "buy", coinId, currency, online = 1, amount = "", payMethod = "", maxPages = 20 } = {}, opts = {}) {
+  const all = [];
+  let page = 1, totalPage = 1;
+  do {
+    const r = await fetchMarketPage({ tradeType, coinId, currency, online, amount, payMethod, page }, opts);
+    all.push(...r.ads);
+    totalPage = r.totalPage;
+    page += 1;
+  } while (page <= totalPage && page <= maxPages);
+  return dedupeMerchants(all);
+}
+
+export async function fetchMerchantAds(uid, tradeType = "buy", opts = {}) {
+  const body = await getJson(`${API}/data/trade-list/${encodeURIComponent(uid)}?tradeType=${tradeType}`, opts);
+  return Array.isArray(body.data) ? body.data : [];
+}
+
+export async function fetchMerchantInfo(uid, opts = {}) {
+  const body = await getJson(`${API}/user/${encodeURIComponent(uid)}/info`, opts);
+  return body.data || {};
+}
