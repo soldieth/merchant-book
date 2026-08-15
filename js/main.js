@@ -94,19 +94,29 @@ function wire() {
   });
   $("#f-side").addEventListener("change", (e) => { state.side = e.target.value; loadMarket(); });
   $("#reload-btn").addEventListener("click", loadMarket);
+  const lock = $("#lock-btn");
+  if (lock) lock.addEventListener("click", () => { try { localStorage.removeItem(GATE_KEY); } catch {} location.reload(); });
 }
+
+// Флаг разблокировки: храним хэш пароля, чтобы смена пароля инвалидировала сессию.
+const GATE_KEY = "mb_gate";
+const gateVal = () => GATE.passwordHash || "open";
 
 async function boot() {
   const gate = $("#gate"), app = $("#app");
+  const openApp = () => { gate.hidden = true; app.hidden = false; wire(); loadMarket(); };
   const enter = async () => {
     const ok = await checkGate($("#gate-input").value, GATE.passwordHash);
     if (!ok) { $("#gate-error").textContent = "Неверный пароль"; return; }
-    gate.hidden = true; app.hidden = false;
-    wire(); await loadMarket();
+    try { localStorage.setItem(GATE_KEY, gateVal()); } catch {}
+    openApp();
   };
   $("#gate-btn").addEventListener("click", enter);
   $("#gate-input").addEventListener("keydown", (e) => { if (e.key === "Enter") enter(); });
-  if (!GATE.passwordHash) { gate.hidden = true; app.hidden = false; wire(); await loadMarket(); }
+  // гейт выключен ИЛИ уже разблокировано на этом устройстве раньше → не спрашиваем
+  let unlocked = !GATE.passwordHash;
+  try { if (localStorage.getItem(GATE_KEY) === gateVal()) unlocked = true; } catch {}
+  if (unlocked) openApp();
 }
 
 boot();
