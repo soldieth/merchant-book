@@ -25,6 +25,7 @@ button:hover { border-color:var(--acc); }
 .mrow:hover { border-color:var(--acc); }
 .mrow > span { color:var(--mut); }
 .mrow .m-name { flex:1 1 180px; min-width:0; color:var(--fg); font-weight:600; display:flex; align-items:center; gap:6px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+.mrow .m-name .real { font-weight:400; font-size:12px; }
 .mrow .m-lv { flex:0 0 34px; }
 .mrow .m-stat { flex:0 0 150px; }
 .mrow .m-price { flex:0 0 96px; color:var(--fg); }

@@ -1,7 +1,7 @@
 // Чистые функции фильтрации/сортировки/поиска. Без DOM, без fetch.
 
 export function applyFilters(merchants, criteria = {}, notesMap = new Map()) {
-  const { amount, payMethod, onlineOnly, minLevel, hasNote, hasTags, hasContacts, tag } = criteria;
+  const { amount, payMethod, onlineOnly, minLevel, hasNote, hasNickname, hasTags, hasContacts, tag } = criteria;
   return (merchants || []).filter((m) => {
     if (onlineOnly && !m.isOnline) return false;
     if (minLevel != null && m.merchantLevel < minLevel) return false;
@@ -13,6 +13,7 @@ export function applyFilters(merchants, criteria = {}, notesMap = new Map()) {
       if (Number.isFinite(a) && (m.minLimit > a || m.maxLimit < a)) return false;
     }
     const note = notesMap.get(m.uid);
+    if (hasNickname && !(note && note.nickname)) return false;
     if (hasNote && !(note && (note.note || (note.tags && note.tags.length) || (note.contacts && note.contacts.length)))) return false;
     if (hasTags && !(note && note.tags && note.tags.length)) return false;
     if (hasContacts && !(note && note.contacts && note.contacts.length)) return false;
@@ -42,6 +43,7 @@ export function searchMerchants(merchants, query, notesMap = new Map()) {
     if (String(m.uid).includes(q)) return true;
     const note = notesMap.get(m.uid);
     if (note) {
+      if (String(note.nickname || "").toLowerCase().includes(q)) return true;
       if (String(note.note || "").toLowerCase().includes(q)) return true;
       if ((note.tags || []).some((t) => String(t).toLowerCase().includes(q))) return true;
       if ((note.contacts || []).some((c) => String(c.value || "").toLowerCase().includes(q) || String(c.type || "").toLowerCase().includes(q))) return true;

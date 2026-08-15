@@ -16,6 +16,7 @@ export function buildUpsertRow(uid, patch = {}, now = () => new Date().toISOStri
   return {
     uid,
     user_name: patch.userName != null ? String(patch.userName) : undefined,
+    nickname: patch.nickname != null ? String(patch.nickname) : "",
     note: patch.note != null ? String(patch.note) : "",
     tags: Array.isArray(patch.tags) ? patch.tags.map(String) : [],
     contacts: Array.isArray(patch.contacts) ? patch.contacts.map((c) => ({ type: String(c.type || ""), value: String(c.value || "") })) : [],
@@ -25,7 +26,7 @@ export function buildUpsertRow(uid, patch = {}, now = () => new Date().toISOStri
 }
 
 function normNote(row) {
-  return { uid: row.uid, userName: row.user_name || "", note: row.note || "", tags: row.tags || [], contacts: row.contacts || [], blacklist: !!row.blacklist };
+  return { uid: row.uid, userName: row.user_name || "", nickname: row.nickname || "", note: row.note || "", tags: row.tags || [], contacts: row.contacts || [], blacklist: !!row.blacklist };
 }
 
 export async function getNotes(cfg, uids, { fetchImpl = globalThis.fetch } = {}) {

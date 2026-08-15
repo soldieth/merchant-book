@@ -20,6 +20,7 @@ function currentCriteria() {
       payMethod: $("#f-pay").value || "",
       onlineOnly: $("#f-online").checked,
       minLevel: $("#f-level").value ? Number($("#f-level").value) : null,
+      hasNickname: $("#f-nickname").checked,
       hasTags: $("#f-tags").checked,
       hasContacts: $("#f-contacts").checked,
       tag: $("#f-tag").value.trim() || null,
@@ -87,7 +88,7 @@ async function openDetail(m) {
 }
 
 function wire() {
-  ["#search", "#f-amount", "#f-pay", "#f-online", "#f-level", "#f-sort", "#f-tags", "#f-contacts", "#f-tag"].forEach((sel) => {
+  ["#search", "#f-amount", "#f-pay", "#f-online", "#f-level", "#f-sort", "#f-nickname", "#f-tags", "#f-contacts", "#f-tag"].forEach((sel) => {
     const el = $(sel);
     const ev = el.type === "checkbox" || el.tagName === "SELECT" ? "change" : "input";
     let t; el.addEventListener(ev, () => { clearTimeout(t); t = setTimeout(rerender, 120); });

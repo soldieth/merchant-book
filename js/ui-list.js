@@ -16,6 +16,10 @@ export function renderList(container, merchants, notesMap, onOpen) {
   for (const m of merchants) {
     const note = notesMap.get(m.uid);
     const bl = !!(note && note.blacklist);
+    const nick = note && note.nickname ? esc(note.nickname) : "";
+    const nameHtml = nick
+      ? `<b>${nick}</b> <span class="real mut">${esc(m.userName)}</span>`
+      : esc(m.userName);
     const badges = [];
     if (note && note.note) badges.push(`<span class="badge">📝</span>`);
     if (note && note.contacts && note.contacts.length) badges.push(`<span class="badge">📞 ${note.contacts.length}</span>`);
@@ -23,7 +27,7 @@ export function renderList(container, merchants, notesMap, onOpen) {
     const el = document.createElement("div");
     el.className = "mrow" + (bl ? " danger" : "");
     el.innerHTML = `
-      <span class="m-name"><span class="dot ${m.isOnline ? "on" : "off"}"></span>${bl ? `<span class="danger-ico" title="В чёрном списке">⚠️</span>` : ""}${esc(m.userName)}</span>
+      <span class="m-name"><span class="dot ${m.isOnline ? "on" : "off"}"></span>${bl ? `<span class="danger-ico" title="В чёрном списке">⚠️</span>` : ""}${nameHtml}</span>
       <span class="m-lv mut">Lv${m.merchantLevel}</span>
       <span class="m-stat mut">${num(m.tradeCount)} сд · ${m.orderCompleteRate}%</span>
       <span class="m-price">${price(m.minPrice, m.maxPrice)} ¥</span>

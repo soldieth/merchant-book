@@ -2,6 +2,7 @@
 create table if not exists public.merchant_notes (
   uid bigint primary key,
   user_name text,
+  nickname text default '',
   note text default '',
   tags text[] default '{}',
   contacts jsonb default '[]',
@@ -9,8 +10,9 @@ create table if not exists public.merchant_notes (
   updated_at timestamptz default now()
 );
 
--- Если таблица уже создавалась раньше (без blacklist) — доуронить колонку:
+-- Если таблица уже создавалась раньше — доуронить недостающие колонки:
 -- alter table public.merchant_notes add column if not exists blacklist boolean default false;
+-- alter table public.merchant_notes add column if not exists nickname text default '';
 
 -- RLS включён, но политики открыты для anon (any URL holder может читать/писать).
 -- Пароль-гейт на сайте — только отсев случайных, НЕ защита данных.
