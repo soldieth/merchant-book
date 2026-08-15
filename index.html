@@ -50,6 +50,7 @@
     <aside id="detail" class="detail" hidden></aside>
   </div>
 
-  <script type="module" src="js/main.js"></script>
+  <!-- ?v= — cache-bust для мобильных браузеров; БУМПАТЬ при изменении JS (и v в импортах main.js/ui-*) -->
+  <script type="module" src="js/main.js?v=1"></script>
 </body>
 </html>

@@ -1,10 +1,11 @@
-import { HTX, SUPABASE, GATE, FETCH } from "./config.js";
-import { checkGate } from "./gate.js";
-import { fetchMarketPage, dedupeMerchants, fetchMerchantAds, fetchMerchantInfo } from "./htx-api.js";
-import { applyFilters, sortMerchants, searchMerchants } from "./filters.js";
-import { getNotes, upsertNote } from "./notes-store.js";
-import { renderList } from "./ui-list.js";
-import { renderDetail } from "./ui-detail.js";
+// ?v= — cache-bust для мобильных браузеров; бумпать при изменении JS.
+import { HTX, SUPABASE, GATE, FETCH } from "./config.js?v=1";
+import { checkGate } from "./gate.js?v=1";
+import { fetchMarketPage, dedupeMerchants, fetchMerchantAds, fetchMerchantInfo } from "./htx-api.js?v=1";
+import { applyFilters, sortMerchants, searchMerchants } from "./filters.js?v=1";
+import { getNotes, upsertNote } from "./notes-store.js?v=1";
+import { renderList } from "./ui-list.js?v=1";
+import { renderDetail } from "./ui-detail.js?v=1";
 
 const $ = (s) => document.querySelector(s);
 const esc = (s) => String(s ?? "").replace(/[&<>"]/g, (c) => ({ "&":"&amp;","<":"&lt;",">":"&gt;","\"":"&quot;" }[c]));

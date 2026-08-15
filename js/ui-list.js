@@ -1,4 +1,4 @@
-import { HTX } from "./config.js";
+import { HTX } from "./config.js?v=1";
 
 export function merchantUrl(uid) {
   // Страница трейдера на HTX (профиль + его объявления).

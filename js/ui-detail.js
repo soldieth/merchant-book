@@ -1,4 +1,4 @@
-import { merchantUrl } from "./ui-list.js";
+import { merchantUrl } from "./ui-list.js?v=1";
 
 const esc = (s) => String(s ?? "").replace(/[&<>"]/g, (c) => ({ "&":"&amp;","<":"&lt;",">":"&gt;","\"":"&quot;" }[c]));
 
