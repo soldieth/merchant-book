@@ -35,7 +35,7 @@ function rerender() {
   let list = applyFilters(state.merchants, criteria, state.notes);
   list = searchMerchants(list, query, state.notes);
   list = sortMerchants(list, sortKey, dir);
-  renderList($("#list"), list, state.notes, openDetail);
+  renderList($("#list"), list, state.notes, openDetail, (uid) => fetchMerchantAds(uid, state.side));
   if (state.notesError) {
     setStatus(`${list.length} из ${state.merchants.length} · ⚠ ${state.notesError}`, true);
   } else {
