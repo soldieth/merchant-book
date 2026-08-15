@@ -1,6 +1,6 @@
 import { HTX, SUPABASE, GATE, FETCH } from "./config.js";
 import { checkGate } from "./gate.js";
-import { fetchAllMerchants, fetchMerchantAds, fetchMerchantInfo } from "./htx-api.js";
+import { fetchMarketPage, dedupeMerchants, fetchMerchantAds, fetchMerchantInfo } from "./htx-api.js";
 import { applyFilters, sortMerchants, searchMerchants } from "./filters.js";
 import { getNotes, upsertNote } from "./notes-store.js";
 import { renderList } from "./ui-list.js";
@@ -8,7 +8,9 @@ import { renderDetail } from "./ui-detail.js";
 
 const $ = (s) => document.querySelector(s);
 const esc = (s) => String(s ?? "").replace(/[&<>"]/g, (c) => ({ "&":"&amp;","<":"&lt;",">":"&gt;","\"":"&quot;" }[c]));
-const state = { merchants: [], notes: new Map(), side: "buy", notesError: null };
+const state = { merchants: [], notes: new Map(), side: "buy", notesError: null, allAds: [], nextPage: 1, totalPage: 1, loading: false };
+const FIRST_PAGES = 3; // первая порция (≈30 объявлений)
+const MORE_PAGES = 3;   // сколько догружать по кнопке
 
 function setStatus(text, isErr = false) { const el = $("#status"); el.textContent = text; el.classList.toggle("error", isErr); }
 
@@ -57,18 +59,46 @@ function refreshPayOptions() {
   $("#tag-list").innerHTML = [...tags].sort().map((t) => `<option value="${esc(t)}">`).join("");
 }
 
+function setMoreBtn() {
+  const b = $("#more-btn");
+  if (!b) return;
+  const more = state.nextPage <= state.totalPage;
+  b.hidden = !more;
+  b.disabled = state.loading;
+  b.textContent = state.loading ? "Загрузка…" : "Загрузить ещё";
+}
+
+// Полный сброс + первая порция (при загрузке/смене стороны/обновлении).
 async function loadMarket() {
+  state.allAds = []; state.nextPage = 1; state.totalPage = 1;
+  state.merchants = []; state.notes = new Map(); state.notesError = null;
   setStatus("Загрузка стакана HTX…");
+  await loadBatch(FIRST_PAGES);
+}
+
+// Догружает nPages страниц стакана, дедупит всё накопленное, подтягивает заметки для новых.
+async function loadBatch(nPages) {
+  if (state.loading) return;
+  state.loading = true; setMoreBtn();
   try {
-    state.merchants = await fetchAllMerchants({ tradeType: state.side, coinId: HTX.coinId, currency: HTX.currency, maxPages: FETCH.maxPages });
-    try {
-      state.notes = await getNotes(SUPABASE, state.merchants.map((m) => m.uid));
-      state.notesError = null;
-    } catch (e) { state.notesError = "заметки не загрузились: " + e.message; }
+    for (let i = 0; i < nPages && state.nextPage <= state.totalPage; i++) {
+      const r = await fetchMarketPage({ tradeType: state.side, coinId: HTX.coinId, currency: HTX.currency, page: state.nextPage });
+      state.allAds.push(...r.ads);
+      state.totalPage = r.totalPage;
+      state.nextPage += 1;
+    }
+    state.merchants = dedupeMerchants(state.allAds);
+    const need = state.merchants.map((m) => m.uid).filter((u) => !state.notes.has(u));
+    if (need.length) {
+      try { const nm = await getNotes(SUPABASE, need); nm.forEach((v, k) => state.notes.set(k, v)); state.notesError = null; }
+      catch (e) { state.notesError = "заметки не загрузились: " + e.message; }
+    }
     refreshPayOptions();
     rerender();
   } catch (e) {
     setStatus("Ошибка загрузки HTX: " + e.message, true);
+  } finally {
+    state.loading = false; setMoreBtn();
   }
 }
 
@@ -98,6 +128,7 @@ function wire() {
   });
   $("#f-side").addEventListener("change", (e) => { state.side = e.target.value; loadMarket(); });
   $("#reload-btn").addEventListener("click", loadMarket);
+  $("#more-btn").addEventListener("click", () => loadBatch(MORE_PAGES));
   const lock = $("#lock-btn");
   if (lock) lock.addEventListener("click", () => { try { localStorage.removeItem(GATE_KEY); } catch {} location.reload(); });
 }

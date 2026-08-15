@@ -32,6 +32,8 @@ button:hover { border-color:var(--acc); }
 .mrow .m-lim { flex:0 0 150px; }
 .mrow .m-pay { flex:0 0 150px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
 .mrow .m-badges { flex:1 1 auto; display:flex; gap:4px; flex-wrap:wrap; justify-content:flex-end; }
+#more-wrap { display:flex; justify-content:center; padding:4px 14px 24px; max-width:1080px; margin-inline:auto; }
+#more-btn { padding:10px 24px; }
 .mrow.danger { border-color:#a3423a; background:#241a1b; }
 .mrow.danger .m-name { color:#e06b6b; }
 .danger-ico { font-size:13px; }
