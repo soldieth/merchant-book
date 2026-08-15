@@ -82,7 +82,7 @@ async function loadBatch(nPages) {
   state.loading = true; setMoreBtn();
   try {
     for (let i = 0; i < nPages && state.nextPage <= state.totalPage; i++) {
-      const r = await fetchMarketPage({ tradeType: state.side, coinId: HTX.coinId, currency: HTX.currency, page: state.nextPage });
+      const r = await fetchMarketPage({ tradeType: state.side, coinId: HTX.coinId, currency: HTX.currency, page: state.nextPage, amount: $("#f-amount").value || "" });
       state.allAds.push(...r.ads);
       state.totalPage = r.totalPage;
       state.nextPage += 1;
@@ -121,11 +121,13 @@ async function openDetail(m) {
 }
 
 function wire() {
-  ["#search", "#f-amount", "#f-pay", "#f-level", "#f-sort", "#f-nickname", "#f-tags", "#f-contacts", "#f-tag"].forEach((sel) => {
+  ["#search", "#f-pay", "#f-level", "#f-sort", "#f-nickname", "#f-tags", "#f-contacts", "#f-tag"].forEach((sel) => {
     const el = $(sel);
     const ev = el.type === "checkbox" || el.tagName === "SELECT" ? "change" : "input";
     let t; el.addEventListener(ev, () => { clearTimeout(t); t = setTimeout(rerender, 120); });
   });
+  // Сумма сделки — серверный фильтр HTX: меняем → перезагружаем стакан (подходящие в первой порции)
+  let at; $("#f-amount").addEventListener("input", () => { clearTimeout(at); at = setTimeout(loadMarket, 450); });
   $("#f-side").addEventListener("change", (e) => { state.side = e.target.value; loadMarket(); });
   $("#reload-btn").addEventListener("click", loadMarket);
   $("#more-btn").addEventListener("click", () => loadBatch(MORE_PAGES));
