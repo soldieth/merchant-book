@@ -67,6 +67,16 @@ test("dedupeMerchants: orderCompleteRate и tradeCount числа", () => {
   assert.equal(m[0].tradeCount, 100.5);
 });
 
+test("dedupeMerchants: minLimit=0 — легитимный ноль не отбрасывается", () => {
+  const ads = [
+    AD({ minTradeLimit: "0", maxTradeLimit: "137544" }),
+    AD({ minTradeLimit: "50", maxTradeLimit: "137544" }),
+  ];
+  const m = dedupeMerchants(ads);
+  assert.equal(m[0].minLimit, 0);
+  assert.equal(m[0].maxLimit, 137544);
+});
+
 function fakeFetch(pages) {
   // pages: массив тел по currPage (1-индексация)
   return async (url) => {

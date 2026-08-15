@@ -62,7 +62,7 @@ export function dedupeMerchants(ads) {
     m.merchantLevel = Math.max(m.merchantLevel, num(ad.merchantLevel));
     m.isOnline = m.isOnline || !!ad.isOnline;
     if (price > 0) { m.minPrice = Math.min(m.minPrice || price, price); m.maxPrice = Math.max(m.maxPrice, price); }
-    m.minLimit = Math.min(m.minLimit || minL, minL);
+    m.minLimit = Math.min(m.minLimit, minL);
     m.maxLimit = Math.max(m.maxLimit, maxL);
     methods.forEach((x) => m.payMethods.add(x));
   }
