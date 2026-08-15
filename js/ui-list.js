@@ -31,11 +31,9 @@ export function renderList(container, merchants, notesMap, onOpen) {
     el.className = "mrow" + (bl ? " danger" : "");
     el.innerHTML = `
       <span class="m-name"><span class="dot ${m.isOnline ? "on" : "off"}"></span>${bl ? `<span class="danger-ico" title="В чёрном списке">⚠️</span>` : ""}${nameHtml}</span>
-      <span class="m-lv mut">Lv${m.merchantLevel}</span>
       <span class="m-stat mut">${num(m.tradeCount)} сд · ${m.orderCompleteRate}%</span>
       <span class="m-price">${price(m.minPrice, m.maxPrice)} ¥</span>
       <span class="m-lim mut">${num(m.minLimit)}–${num(m.maxLimit)}</span>
-      <span class="m-pay mut">${esc((m.payMethods || []).join(", "))}</span>
       <span class="m-badges">${badges.join("")}</span>`;
     el.addEventListener("click", () => onOpen(m));
     container.appendChild(el);

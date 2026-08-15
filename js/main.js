@@ -47,7 +47,11 @@ function refreshPayOptions() {
   const sel = $("#f-pay");
   const cur = sel.value;
   sel.innerHTML = `<option value="">Все способы</option>` + [...set].sort().map((p) => `<option>${esc(p)}</option>`).join("");
+  // сохраняем текущий выбор; Alipay по умолчанию — только на самой первой загрузке
+  // (потом пустое значение = осознанный выбор «Все способы», не переопределяем)
   if (cur && set.has(cur)) sel.value = cur;
+  else if (!state.payInit && set.has("Alipay")) sel.value = "Alipay";
+  state.payInit = true;
   const tags = new Set();
   state.notes.forEach((n) => (n.tags || []).forEach((t) => tags.add(t)));
   $("#tag-list").innerHTML = [...tags].sort().map((t) => `<option value="${esc(t)}">`).join("");
