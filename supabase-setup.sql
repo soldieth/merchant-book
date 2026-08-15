@@ -17,3 +17,7 @@ create policy "anon read"  on public.merchant_notes for select using (true);
 create policy "anon write" on public.merchant_notes for insert with check (true);
 create policy "anon update" on public.merchant_notes for update using (true) with check (true);
 create policy "anon delete" on public.merchant_notes for delete using (true);
+
+-- Табличные привилегии для роли anon. БЕЗ этого RLS-политики не срабатывают —
+-- PostgREST возвращает 401 "permission denied for table" (42501). Обязательно.
+grant select, insert, update, delete on public.merchant_notes to anon;

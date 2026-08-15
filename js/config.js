@@ -8,8 +8,8 @@ export const HTX = {
 
 // Supabase → Project Settings → API: Project URL и anon public key.
 export const SUPABASE = {
-  url: "https://YOUR-PROJECT.supabase.co",
-  anonKey: "YOUR-ANON-KEY",
+  url: "https://ddiiigzqrqpotxipnrfr.supabase.co",
+  anonKey: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImRkaWlpZ3pxcnFwb3R4aXBucmZyIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODY4MTI3MzcsImV4cCI6MjEwMjM4ODczN30.Qt0afCCiAt38RN1V3gm_L9YOHu-MZ1G-gHIEPx_-OPU",
   table: "merchant_notes",
 };
 
