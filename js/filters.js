@@ -1,16 +1,20 @@
 // Чистые функции фильтрации/сортировки/поиска. Без DOM, без fetch.
 
 export function applyFilters(merchants, criteria = {}, notesMap = new Map()) {
-  const { minAmount, maxAmount, payMethod, onlineOnly, minLevel, hasNote, tag, hasContacts } = criteria;
+  const { amount, payMethod, onlineOnly, minLevel, hasNote, hasTags, hasContacts, tag } = criteria;
   return (merchants || []).filter((m) => {
     if (onlineOnly && !m.isOnline) return false;
     if (minLevel != null && m.merchantLevel < minLevel) return false;
     if (payMethod && !(m.payMethods || []).includes(payMethod)) return false;
-    // сумма: желаемый объём должен попадать в диапазон лимитов мерчанта
-    if (minAmount != null && minAmount !== "" && m.maxLimit < Number(minAmount)) return false;
-    if (maxAmount != null && maxAmount !== "" && m.minLimit > Number(maxAmount)) return false;
+    // сумма сделки: показываем только тех, у кого minLimit ≤ сумма ≤ maxLimit
+    // (т.е. этот объём реально можно у мерчанта оторговать)
+    if (amount != null && amount !== "") {
+      const a = Number(amount);
+      if (Number.isFinite(a) && (m.minLimit > a || m.maxLimit < a)) return false;
+    }
     const note = notesMap.get(m.uid);
     if (hasNote && !(note && (note.note || (note.tags && note.tags.length) || (note.contacts && note.contacts.length)))) return false;
+    if (hasTags && !(note && note.tags && note.tags.length)) return false;
     if (hasContacts && !(note && note.contacts && note.contacts.length)) return false;
     if (tag && !(note && (note.tags || []).includes(tag))) return false;
     return true;

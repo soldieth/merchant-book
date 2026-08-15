@@ -26,8 +26,7 @@
     <section class="filters">
       <select id="f-side"><option value="buy">Покупают USDT</option><option value="sell">Продают USDT</option></select>
       <input id="search" type="search" placeholder="Поиск: имя / uid / контакт / тег" />
-      <input id="f-min" type="number" placeholder="Сумма от" />
-      <input id="f-max" type="number" placeholder="до" />
+      <input id="f-amount" type="number" placeholder="Сумма сделки" />
       <select id="f-pay"><option value="">Все способы</option></select>
       <select id="f-level"><option value="">Любой уровень</option><option value="1">1+</option><option value="2">2+</option><option value="3">3+</option></select>
       <select id="f-sort">
@@ -38,7 +37,8 @@
         <option value="merchantLevel:desc">Уровень ↓</option>
       </select>
       <label><input id="f-online" type="checkbox" checked /> Онлайн</label>
-      <label><input id="f-note" type="checkbox" /> С заметкой</label>
+      <label><input id="f-tags" type="checkbox" /> С тегами</label>
+      <label><input id="f-contacts" type="checkbox" /> С контактами</label>
       <input id="f-tag" type="text" placeholder="Тег" list="tag-list" />
       <datalist id="tag-list"></datalist>
     </section>

@@ -5,8 +5,12 @@ create table if not exists public.merchant_notes (
   note text default '',
   tags text[] default '{}',
   contacts jsonb default '[]',
+  blacklist boolean default false,
   updated_at timestamptz default now()
 );
+
+-- Если таблица уже создавалась раньше (без blacklist) — доуронить колонку:
+-- alter table public.merchant_notes add column if not exists blacklist boolean default false;
 
 -- RLS включён, но политики открыты для anon (any URL holder может читать/писать).
 -- Пароль-гейт на сайте — только отсев случайных, НЕ защита данных.

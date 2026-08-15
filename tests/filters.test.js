@@ -18,10 +18,21 @@ test("applyFilters: minLevel", () => {
   assert.deepEqual(r.map((m) => m.uid), [2]);
 });
 
-test("applyFilters: диапазон суммы пересекается с лимитами ad'а", () => {
-  // хотим торговать на 20000: у мерчанта лимиты 1000..50000 → подходит
-  const r = applyFilters([M({ uid: 1, minLimit: 1000, maxLimit: 50000 }), M({ uid: 2, minLimit: 60000, maxLimit: 90000 })], { minAmount: 20000, maxAmount: 20000 }, new Map());
+test("applyFilters: сумма сделки — только те, у кого minLimit ≤ сумма ≤ maxLimit", () => {
+  // хотим оторговать 20000: мерчант 1 (1000..50000) подходит, мерчант 2 (60000..90000) — нет
+  const r = applyFilters([M({ uid: 1, minLimit: 1000, maxLimit: 50000 }), M({ uid: 2, minLimit: 60000, maxLimit: 90000 })], { amount: 20000 }, new Map());
   assert.deepEqual(r.map((m) => m.uid), [1]);
+});
+
+test("applyFilters: сумма 300 отсекает мерчанта с минималкой 32000", () => {
+  const r = applyFilters([M({ uid: 1, minLimit: 100, maxLimit: 10000 }), M({ uid: 2, minLimit: 32000, maxLimit: 800000 })], { amount: 300 }, new Map());
+  assert.deepEqual(r.map((m) => m.uid), [1]);
+});
+
+test("applyFilters: hasTags — только с непустыми тегами", () => {
+  const notes = new Map([[2, { uid: 2, note: "", tags: ["renamed"], contacts: [] }], [3, { uid: 3, note: "x", tags: [], contacts: [] }]]);
+  const list = [M({ uid: 1 }), M({ uid: 2 }), M({ uid: 3 })];
+  assert.deepEqual(applyFilters(list, { hasTags: true }, notes).map((m) => m.uid), [2]);
 });
 
 test("applyFilters: payMethod", () => {

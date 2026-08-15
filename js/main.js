@@ -16,12 +16,12 @@ function currentCriteria() {
   const [sortKey, dir] = $("#f-sort").value.split(":");
   return {
     criteria: {
-      minAmount: $("#f-min").value || null,
-      maxAmount: $("#f-max").value || null,
+      amount: $("#f-amount").value || null,
       payMethod: $("#f-pay").value || "",
       onlineOnly: $("#f-online").checked,
       minLevel: $("#f-level").value ? Number($("#f-level").value) : null,
-      hasNote: $("#f-note").checked,
+      hasTags: $("#f-tags").checked,
+      hasContacts: $("#f-contacts").checked,
       tag: $("#f-tag").value.trim() || null,
     },
     sortKey, dir, query: $("#search").value,
@@ -87,7 +87,7 @@ async function openDetail(m) {
 }
 
 function wire() {
-  ["#search", "#f-min", "#f-max", "#f-pay", "#f-online", "#f-level", "#f-sort", "#f-note", "#f-tag"].forEach((sel) => {
+  ["#search", "#f-amount", "#f-pay", "#f-online", "#f-level", "#f-sort", "#f-tags", "#f-contacts", "#f-tag"].forEach((sel) => {
     const el = $(sel);
     const ev = el.type === "checkbox" || el.tagName === "SELECT" ? "change" : "input";
     let t; el.addEventListener(ev, () => { clearTimeout(t); t = setTimeout(rerender, 120); });

@@ -19,12 +19,13 @@ export function buildUpsertRow(uid, patch = {}, now = () => new Date().toISOStri
     note: patch.note != null ? String(patch.note) : "",
     tags: Array.isArray(patch.tags) ? patch.tags.map(String) : [],
     contacts: Array.isArray(patch.contacts) ? patch.contacts.map((c) => ({ type: String(c.type || ""), value: String(c.value || "") })) : [],
+    blacklist: !!patch.blacklist,
     updated_at: now(),
   };
 }
 
 function normNote(row) {
-  return { uid: row.uid, userName: row.user_name || "", note: row.note || "", tags: row.tags || [], contacts: row.contacts || [] };
+  return { uid: row.uid, userName: row.user_name || "", note: row.note || "", tags: row.tags || [], contacts: row.contacts || [], blacklist: !!row.blacklist };
 }
 
 export async function getNotes(cfg, uids, { fetchImpl = globalThis.fetch } = {}) {
