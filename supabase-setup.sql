@@ -8,8 +8,9 @@ create table if not exists public.merchant_notes (
   updated_at timestamptz default now()
 );
 
--- RLS: включаем и разрешаем anon read/write (защита — пароль-гейт на сайте).
--- Если нужен более строгий доступ — заменить на политику с секретом/JWT.
+-- RLS включён, но политики открыты для anon (any URL holder может читать/писать).
+-- Пароль-гейт на сайте — только отсев случайных, НЕ защита данных.
+-- Ужесточить при необходимости (секрет в заголовке / Supabase Auth).
 alter table public.merchant_notes enable row level security;
 
 create policy "anon read"  on public.merchant_notes for select using (true);

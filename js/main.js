@@ -7,6 +7,7 @@ import { renderList } from "./ui-list.js";
 import { renderDetail } from "./ui-detail.js";
 
 const $ = (s) => document.querySelector(s);
+const esc = (s) => String(s ?? "").replace(/[&<>"]/g, (c) => ({ "&":"&amp;","<":"&lt;",">":"&gt;","\"":"&quot;" }[c]));
 const state = { merchants: [], notes: new Map(), side: "buy", notesError: null };
 
 function setStatus(text, isErr = false) { const el = $("#status"); el.textContent = text; el.classList.toggle("error", isErr); }
@@ -44,10 +45,12 @@ function refreshPayOptions() {
   const set = new Set();
   state.merchants.forEach((m) => (m.payMethods || []).forEach((p) => set.add(p)));
   const sel = $("#f-pay");
-  sel.innerHTML = `<option value="">Все способы</option>` + [...set].sort().map((p) => `<option>${p}</option>`).join("");
+  const cur = sel.value;
+  sel.innerHTML = `<option value="">Все способы</option>` + [...set].sort().map((p) => `<option>${esc(p)}</option>`).join("");
+  if (cur && set.has(cur)) sel.value = cur;
   const tags = new Set();
   state.notes.forEach((n) => (n.tags || []).forEach((t) => tags.add(t)));
-  $("#tag-list").innerHTML = [...tags].sort().map((t) => `<option value="${t}">`).join("");
+  $("#tag-list").innerHTML = [...tags].sort().map((t) => `<option value="${esc(t)}">`).join("");
 }
 
 async function loadMarket() {
