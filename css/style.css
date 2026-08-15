@@ -1,5 +1,8 @@
 :root { --bg:#14161a; --card:#1d2026; --line:#2b2f37; --fg:#e6e8ec; --mut:#9aa0aa; --acc:#3aa675; --warn:#c9962f; }
 * { box-sizing: border-box; }
+/* HTML-атрибут hidden должен всегда прятать элемент, даже если класс задаёт
+   display:flex/grid (иначе оверлеи типа .gate/.detail не скрываются). */
+[hidden] { display: none !important; }
 body { margin:0; background:var(--bg); color:var(--fg); font:14px/1.4 system-ui,Segoe UI,Roboto,sans-serif; }
 .gate { position:fixed; inset:0; display:flex; align-items:center; justify-content:center; background:var(--bg); z-index:10; }
 .gate-box { display:flex; flex-direction:column; gap:10px; width:260px; }
