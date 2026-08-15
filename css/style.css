@@ -76,10 +76,12 @@ a { color:var(--acc); }
   .filters select, .filters input[type=number], .filters #f-tag { flex:1 1 auto; width:auto; min-width:90px; }
   .list { padding:10px; }
   .mrow { gap:8px 10px; flex-wrap:wrap; padding:10px; }
-  .mrow .m-lv, .mrow .m-stat, .mrow .m-lim, .mrow .m-pay { display:none; }
-  .mrow .m-name { flex:1 1 60%; }
+  .mrow .m-stat, .mrow .m-lim { display:none; }
+  .mrow .m-name { flex:1 1 auto; }
   .mrow .m-price { flex:0 0 auto; }
-  .mrow .m-badges { flex:1 1 100%; justify-content:flex-start; }
+  .mrow .m-badges { order:10; flex:1 1 100%; justify-content:flex-start; }
+  .mrow .m-badges:empty { display:none; }
+  .mrow-body { padding-left:12px; }
   .detail { width:100vw; border-left:none; }
   input, select, button, textarea { font-size:16px; }
 }
