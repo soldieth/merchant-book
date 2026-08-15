@@ -1,0 +1,53 @@
+<!doctype html>
+<html lang="ru">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Merchant Book</title>
+  <link rel="stylesheet" href="css/style.css" />
+</head>
+<body>
+  <div id="gate" class="gate">
+    <div class="gate-box">
+      <h1>Merchant Book</h1>
+      <input id="gate-input" type="password" placeholder="Пароль" autocomplete="current-password" />
+      <button id="gate-btn">Войти</button>
+      <div id="gate-error" class="gate-error"></div>
+    </div>
+  </div>
+
+  <div id="app" hidden>
+    <header class="topbar">
+      <strong>Merchant Book</strong>
+      <span class="market">HTX · CNY</span>
+      <button id="reload-btn">↻ Обновить</button>
+    </header>
+
+    <section class="filters">
+      <select id="f-side"><option value="buy">Покупают USDT</option><option value="sell">Продают USDT</option></select>
+      <input id="search" type="search" placeholder="Поиск: имя / uid / контакт / тег" />
+      <input id="f-min" type="number" placeholder="Сумма от" />
+      <input id="f-max" type="number" placeholder="до" />
+      <select id="f-pay"><option value="">Все способы</option></select>
+      <select id="f-level"><option value="">Любой уровень</option><option value="1">1+</option><option value="2">2+</option><option value="3">3+</option></select>
+      <select id="f-sort">
+        <option value="tradeCount:desc">Сделок ↓</option>
+        <option value="price:asc">Цена ↑</option>
+        <option value="price:desc">Цена ↓</option>
+        <option value="orderCompleteRate:desc">% завершения ↓</option>
+        <option value="merchantLevel:desc">Уровень ↓</option>
+      </select>
+      <label><input id="f-online" type="checkbox" checked /> Онлайн</label>
+      <label><input id="f-note" type="checkbox" /> С заметкой</label>
+      <input id="f-tag" type="text" placeholder="Тег" list="tag-list" />
+      <datalist id="tag-list"></datalist>
+    </section>
+
+    <div id="status" class="status"></div>
+    <main id="list" class="list"></main>
+    <aside id="detail" class="detail" hidden></aside>
+  </div>
+
+  <script type="module" src="js/main.js"></script>
+</body>
+</html>
