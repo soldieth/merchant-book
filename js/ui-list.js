@@ -22,7 +22,10 @@ export function renderList(container, merchants, notesMap, onOpen) {
       : esc(m.userName);
     const badges = [];
     if (note && note.note) badges.push(`<span class="badge">📝</span>`);
-    if (note && note.contacts && note.contacts.length) badges.push(`<span class="badge">📞 ${note.contacts.length}</span>`);
+    // иконка контакта по типу из БД (Telegram / WeChat), а не номер
+    const types = new Set((note && note.contacts || []).map((c) => c.type));
+    if (types.has("Telegram")) badges.push(`<span class="badge" title="Telegram">✈️</span>`);
+    if (types.has("WeChat")) badges.push(`<span class="badge" title="WeChat">💬</span>`);
     if (note && note.tags) note.tags.forEach((t) => badges.push(`<span class="badge">🏷 ${esc(t)}</span>`));
     const el = document.createElement("div");
     el.className = "mrow" + (bl ? " danger" : "");

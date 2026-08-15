@@ -19,8 +19,8 @@ button:hover { border-color:var(--acc); }
 .filters label { display:flex; align-items:center; gap:6px; color:var(--mut); }
 .status { padding:8px 14px; color:var(--mut); min-height:18px; }
 .status.error { color:#e06b6b; }
-/* 1 мерчант = 1 строка */
-.list { display:flex; flex-direction:column; gap:6px; padding:14px; }
+/* 1 мерчант = 1 строка; список не на всю ширину — центрируем */
+.list { display:flex; flex-direction:column; gap:6px; padding:14px; max-width:1080px; margin-inline:auto; }
 .mrow { display:flex; align-items:center; gap:14px; background:var(--card); border:1px solid var(--line); border-radius:8px; padding:8px 12px; cursor:pointer; }
 .mrow:hover { border-color:var(--acc); }
 .mrow > span { color:var(--mut); }
