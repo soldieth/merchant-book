@@ -11,6 +11,14 @@ function contactRow(c = { type: "", value: "" }) {
 
 const deposit = (info) => Math.round(Number(info && info.marginAmount) || 0).toLocaleString("ru-RU");
 
+// компактный формат: 5000→5.0K, 872638→873K, 1300000→1.3M
+function kFmt(v) {
+  const n = Number(v) || 0;
+  if (n >= 1e6) return (n / 1e6).toFixed(1) + "M";
+  if (n >= 1e3) { const k = n / 1e3; return (k >= 100 ? Math.round(k) : k.toFixed(1)) + "K"; }
+  return String(Math.round(n));
+}
+
 export function renderDetail(panel, { merchant, ads, info }, note, handlers) {
   const n = note || { nickname: "", note: "", tags: [], contacts: [], blacklist: false };
   panel.hidden = false;
@@ -21,10 +29,13 @@ export function renderDetail(panel, { merchant, ads, info }, note, handlers) {
     <p><a href="${merchantUrl(merchant.uid)}" target="_blank" rel="noopener">Открыть на HTX ↗</a></p>
     <h3>Никнейм (моё имя)</h3>
     <input class="d-nickname" placeholder="как называешь этого мерчанта" value="${esc(n.nickname)}" />
-    <div class="mut" style="margin-top:8px">Депозит: ${deposit(info)} USDT${info ? ` · всего сделок: ${info.tradeCount ?? "—"} · релиз ~${info.releaseTime ?? "—"}с · апелляций: ${info.appealTimes ?? "—"}` : ""}</div>
+    <div class="mut" style="margin-top:8px">Депозит: ${deposit(info)} USDT</div>
     <label class="bl"><input type="checkbox" class="d-blacklist" ${n.blacklist ? "checked" : ""} /> 🚫 В чёрный список (ЧС)</label>
     <h3>Объявления (${ads.length})</h3>
-    <div class="ads">${ads.map((a) => `<div class="ad"><b>${esc(a.price)} ¥</b> · лимит ${esc(a.minTradeLimit)}–${esc(a.maxTradeLimit)} · ${esc((a.payMethods||[]).map((p)=>p.name).join(", "))}</div>`).join("") || `<div class="mut">нет активных</div>`}</div>
+    ${ads.length ? `<table class="ads-tbl">
+      <thead><tr><th>Цена</th><th>Лимит CNY</th><th>Метод</th><th>Остаток USDT</th></tr></thead>
+      <tbody>${ads.map((a) => `<tr><td class="p">${esc(a.price)} ¥</td><td>${kFmt(a.minTradeLimit)}–${kFmt(a.maxTradeLimit)}</td><td>${esc((a.payMethods || []).map((p) => p.name).join(", "))}</td><td>${kFmt(a.tradeCount)}</td></tr>`).join("")}</tbody>
+    </table>` : `<div class="mut">нет активных</div>`}
     <h3>Заметка</h3>
     <textarea class="d-note" placeholder="свободная заметка">${esc(n.note)}</textarea>
     <h3>Теги</h3>

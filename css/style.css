@@ -45,6 +45,10 @@ button:hover { border-color:var(--acc); }
 .detail h2 { margin:0 0 4px; }
 .detail .close { position:absolute; top:12px; right:12px; }
 .ad { border:1px solid var(--line); border-radius:8px; padding:8px; margin:6px 0; }
+.ads-tbl { width:100%; border-collapse:collapse; margin:6px 0; font-size:13px; }
+.ads-tbl th { text-align:left; color:var(--mut); font-weight:500; font-size:11px; text-transform:uppercase; letter-spacing:.03em; padding:4px 8px; border-bottom:1px solid var(--line); }
+.ads-tbl td { padding:6px 8px; border-bottom:1px solid var(--line); }
+.ads-tbl td.p { font-weight:600; color:var(--acc); }
 .contacts .crow { display:flex; gap:6px; margin:4px 0; }
 .contacts .crow select { flex:0 0 120px; }
 .contacts .crow input { flex:1; min-width:0; }
